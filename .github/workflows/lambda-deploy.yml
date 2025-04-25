@@ -6,7 +6,7 @@ on:        #defines when the worflow should run
     branches:
       - main
     paths:
-      _ 'lambda/'
+      _ 'lambda/**'
 
 jobs:
   deploy-lambda: # name of the job
