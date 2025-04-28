@@ -32,6 +32,7 @@ jobs: # the jobs to be done in workflow
           stack_name='pr-test-stack-${{ github.event.pull_request.number }}'
           aws cloudformation delete-stack --stack-name $stack_name || echo 'Stack does not exist or already deleted.'
           aws cloudformation wait stack-delete-complete --stack-name $stack_name
+          aws cloudformation describe-stack --stack-name $stack_name || echo 'Stack does not exist '
 
       - name: Validate Cloudformation template # validates the file in cloudformation
         run: |
@@ -40,7 +41,11 @@ jobs: # the jobs to be done in workflow
       - name: Deploy our stack # deploys the stack
         run: |   #aws command to create the stack
           stack_name="pr-test-stack-${{github.event.pull_request.number}}" 
-          aws cloudformation create-stack --stack-name $stack_name --template-body file://cloudformation/s3-bucket.yml --parameters ParameterKey=Environment,ParameterValue=test
+          if ! aws cloudformation create-stack --stack-name $stack_name --template-body file://cloudformation/s3-bucket.yml --parameters ParameterKey=Environment,ParameterValue=test; then
+            echo "Stack creation failed."
+            exit 1
+          fi
+
 
       - name: Comment on the PR  #this provides us with a comment if successful
         uses: actions/github-script@v6
@@ -68,7 +73,12 @@ jobs: # the jobs to be done in workflow
       - name: Delete Test Stack # after merged it delets the stack
         run: |
           stack_name="pr-test-stack-${{ github.event.pull_request.number }}"
-          aws cloudformation delete-stack --stack-name $stack_name
+          if aws cloudformation describe-stacks --stack-name $stack_name > /dev/null; then
+            aws cloudformation delete-stack --stack-name $stack_name
+          else
+            echo "Stack does not exist, nothing to delete."
+          fi
+
 
 # test to change trigger workflow
 # test 6     

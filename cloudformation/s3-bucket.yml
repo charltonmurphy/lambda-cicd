@@ -21,6 +21,7 @@ Resources:
           Value: !Ref Environment
         - Key: Environment
           Value: GithubActionsTesting
+    DeletionPolicy: Delete
 
 Outputs:
   BucketName:
