@@ -42,7 +42,10 @@ jobs: # the jobs to be done in workflow
       - name: Deploy our stack # deploys the stack
         run: |   #aws command to create the stack
           stack_name="pr-test-stack-${{github.event.pull_request.number}}" 
-          aws cloudformation create-stack --stack-name $stack_name --template-body file://cloudformation/s3-bucket.yml --parameters ParameterKey=Environment,ParameterValue=test
+          if ! aws cloudformation create-stack --stack-name $stack_name --template-body file://cloudformation/s3-bucket.yml --parameters ParameterKey=Environment,ParameterValue=test, then
+            echo 'Stack creation FAILD'
+            exit 1
+          fi
 
       - name: Comment on the PR  #this provides us with a comment if successful
         uses: actions/github-script@v6
