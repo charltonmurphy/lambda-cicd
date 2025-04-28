@@ -14,7 +14,8 @@ Resources:
   MyS3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: !Sub '${AWS::StackName}-${Environment}-bucket'  #this is the bucket name
+      BucketName: !Sub '${AWS::StackName}-${Environment}-${AWS::Region}-${AWS::AccountId}-bucket'
+
       Tags:
         - Key: Environment
           Value: !Ref Environment
@@ -27,4 +28,4 @@ Outputs:
     Value: !Ref MyS3Bucket
 # these are code for a S3 bucket
 # test change to trigger workflow
-# testing 5
+# testing 6
