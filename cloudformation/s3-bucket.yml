@@ -25,6 +25,3 @@ Outputs:
   BucketName:
     Description: 'Name of created s3 bucket'
     Value: !Ref MyS3Bucket
-# these are code for a S3 bucket
-# test change to trigger workflow
-# testing 5
