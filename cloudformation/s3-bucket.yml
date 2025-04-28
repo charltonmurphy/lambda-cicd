@@ -14,12 +14,14 @@ Resources:
   MyS3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: !Sub '${AWS::StackName}-${Environment}-bucket'  #this is the bucket name
+      BucketName: !Sub '${AWS::StackName}-${Environment}-${AWS::Region}-${AWS::AccountId}-bucket'
+
       Tags:
         - Key: Environment
           Value: !Ref Environment
         - Key: Environment
           Value: GithubActionsTesting
+    DeletionPolicy: Delete
 
 Outputs:
   BucketName:
