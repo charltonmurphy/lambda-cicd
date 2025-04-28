@@ -27,6 +27,12 @@ jobs: # the jobs to be done in workflow
           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           aws-region: us-west-1
 
+      - name: Delete Existing Stack
+        run: |
+          stack_name='pr-test-stack-${{ github.event.pull_request.number }}'
+          aws cloudformation delete-stack --stack-name $stack_name || echo 'Stack does not exist or already deleted.'
+          aws cloudformation wait stack-delete-complete --stack-name $stack_name
+
       - name: Validate Cloudformation template # validates the file in cloudformation
         run: |
           aws cloudformation validate-template --template-body file://cloudformation/s3-bucket.yml 
@@ -65,4 +71,4 @@ jobs: # the jobs to be done in workflow
           aws cloudformation delete-stack --stack-name $stack_name
 
 # test to change trigger workflow
-# test 4     
+# test 5     
