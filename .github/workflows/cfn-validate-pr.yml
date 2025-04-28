@@ -1,37 +1,37 @@
-name: Validate CloudFormation on PR'
+name: Validate CloudFormation on PR' #Name of workflow
 
 on:
   pull_request:
     paths:
-      - 'cloudformation/**'
+      - 'cloudformation/**' #everything in that folder , workflow trigggers whenver a change is done in the folder
 
 permissions:
-  pull-requests: write
-  contents: read
+  pull-requests: write # allows writing to pull request
+  contents: read # contents read only
 
-jobs:
-  validate-cfn:
+jobs: # the jobs to be done in workflow
+  validate-cfn: 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2  # checks out repo code
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials  # is our creds to access aws rom github
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{secrets.AWS_ACCESS_KEY}}
           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           aws-region: us-west-1
 
-      - name: Validate Cloudformation template
+      - name: Validate Cloudformation template # validates the file in cloudformation
         run: |
-          aws cloudformation validate-template --template-body file://cloudformation/s3-bucket.yml
+          aws cloudformation validate-template --template-body file://cloudformation/s3-bucket.yml 
 
-      - name: Deploy our stack 
-        run: |
-          stack_name="pr-test-stack-${{github.event.pull_request.number}}"
+      - name: Deploy our stack # deploys the stack
+        run: |   #aws command to create the stack
+          stack_name="pr-test-stack-${{github.event.pull_request.number}}" 
           aws cloudformation create-stack --stack-name $stack_name --template-body file://cloudformation/s3-bucket.yml --parameters ParameterKey=Environment,ParameterValue=test
 
-      - name: Comment on the PR
+      - name: Comment on the PR  #this provides us with a comment if successful
         uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
@@ -43,7 +43,7 @@ jobs:
               body: 'Cloudformation test stack deployed. Stack name: pr-test-stack-${{ github.event.pull_request.number}}'
               }) 
               
-  cleanup-on-merge:
+  cleanup-on-merge: # this runs if the branches are successfullly after merg
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
     steps:
@@ -54,10 +54,10 @@ jobs:
           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           aws-region: us-west-1
 
-      - name: Delete Test Stack
+      - name: Delete Test Stack # after merged it delets the stack
         run: |
           stack_name="pr-test-stack-${{ github.event.pull_request.number }}"
           aws cloudformation delete-stack --stack-name $stack_name
 
-          # need to add comments to the code
-          # more added comments to use for testing
+         
+         
