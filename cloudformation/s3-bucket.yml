@@ -27,7 +27,4 @@ Outputs:
   BucketName:
     Description: 'Name of created s3 bucket'
     Value: !Ref MyS3Bucket
-<<<<<<< HEAD
-    
-=======
->>>>>>> main
+
